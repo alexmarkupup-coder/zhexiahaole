@@ -317,6 +317,38 @@
       transform: translateY(0);
     }
 
+    .vip-greeting {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .vip-name {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--color-text);
+      margin-bottom: 16px;
+    }
+
+    .vip-message {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      color: var(--color-text-secondary);
+      margin-bottom: 2px;
+    }
+
+    .vip-confirm {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      color: var(--color-text-secondary);
+    }
+
     .welcome-line {
       font-family: var(--font-serif);
       font-size: 16px;
@@ -581,6 +613,11 @@
       transform: translateY(0);
     }
 
+    .access-section .section-heading,
+    .access-section .section-heading-sub {
+      text-align: center;
+    }
+
     .section-heading {
       font-family: var(--font-serif);
       font-size: 16px;
@@ -606,8 +643,9 @@
     }
 
     .access-address {
-      font-size: 15px;
-      line-height: 1.7;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.8;
       color: var(--color-text);
       margin-bottom: 16px;
     }
@@ -621,9 +659,17 @@
       color: var(--color-accent);
       text-decoration: none;
       letter-spacing: 0.04em;
-      margin-bottom: 20px;
+      margin-bottom: 6px;
       transition: opacity 0.2s ease;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    .access-phone-hint {
+      font-size: 10px;
+      color: var(--color-text-light);
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+      opacity: 0.6;
     }
 
     .access-phone:active {
@@ -645,23 +691,23 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 12px 28px;
-      background: transparent;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
+      padding: 14px 32px;
+      background: #2C2416;
+      border: none;
+      border-radius: 8px;
       font-family: var(--font-sans);
       font-size: 14px;
-      color: var(--color-text);
-      letter-spacing: 0.04em;
+      color: #FFFFFF;
+      letter-spacing: 0.06em;
       text-decoration: none;
       cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease;
+      transition: background 0.2s ease, transform 0.1s ease;
       -webkit-tap-highlight-color: transparent;
     }
 
     .btn-map:active {
-      background: var(--color-highlight);
-      border-color: var(--color-accent-soft);
+      background: #1A1510;
+      transform: scale(0.98);
     }
 
     /* ========================================
@@ -718,8 +764,8 @@
     }
 
     .gallery-grid {
-      column-count: 2;
-      column-gap: 8px;
+      column-count: 1;
+      column-gap: 0;
     }
 
     .gallery-item {
@@ -821,6 +867,7 @@
       }
 
       .gallery-grid {
+        column-count: 2;
         column-gap: 10px;
       }
 
@@ -895,15 +942,6 @@
       onerror="this.style.display='none'"
     >
     <div class="hero-overlay">
-      <img
-        class="hero-logo"
-        id="heroLogo"
-        src="tttsss/logo.jpg"
-        alt="鮨 雲丹"
-        onload="this.classList.add('loaded')"
-        onerror="this.style.display='none'"
-      >
-      <div class="hero-logo-placeholder" id="heroLogoPlaceholder">雲</div>
       <h1 class="hero-shop-name" id="heroShopName">鮨 雲丹</h1>
       <p class="hero-shop-name-sub" id="heroShopNameSub">SUSHI UNI · SHANGHAI</p>
       <p class="hero-tagline" id="heroTagline">旬之味，静时光。</p>
@@ -918,6 +956,11 @@
 
     <!-- Welcome Section -->
     <section class="welcome-section" id="welcomeSection">
+      <p class="vip-greeting" data-i18n="vipGreeting">尊敬的贵宾</p>
+      <p class="vip-name" id="vipName"></p>
+      <p class="vip-message" data-i18n="vipMessage">您好！感谢您的信任与选择</p>
+      <p class="vip-confirm" data-i18n="vipConfirm">您已在 鮨雲丹 预订成功</p>
+      <div class="welcome-divider" style="margin-top:28px; margin-bottom:24px;"></div>
       <p class="welcome-line" data-i18n="welcomeLine1">鮨 雲丹 全体员工恭候您的光临</p>
       <p class="welcome-line" data-i18n="welcomeLine2">祝您生活愉快，用餐愉悦</p>
       <div class="welcome-divider"></div>
@@ -991,6 +1034,7 @@
           <span aria-hidden="true">☏</span>
           <span id="shop-phone"></span>
         </a>
+        <div class="access-phone-hint" data-i18n="phoneHint">☝️ 点击号码直接拨打</div>
         <div class="access-note" id="shop-access-note"></div>
         <a class="btn-map" id="shop-map-link" href="#" target="_blank" rel="noopener">
           <span aria-hidden="true">→</span>
@@ -1011,6 +1055,11 @@
       <h2 class="section-heading" data-i18n="galleryTitle">空间</h2>
       <p class="section-heading-sub" data-i18n="galleryTitleSub">ギャラリー</p>
       <div class="gallery-grid">
+        <div class="gallery-item">
+          <div class="gallery-placeholder">logo</div>
+          <img class="gallery-img" src="tttsss/logo.jpg" alt="鮨 雲丹" loading="lazy" decoding="async"
+            onload="this.previousElementSibling.style.display='none';this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
         <div class="gallery-item">
           <div class="gallery-placeholder">gallery 01</div>
           <img class="gallery-img" src="tttsss/store2.jpg" alt="" loading="lazy" decoding="async"
@@ -1082,10 +1131,14 @@
         accessTitle: '门店信息',
         accessTitleSub: 'アクセス',
         navButton: '导航',
+        phoneHint: '☝️ 点击号码直接拨打',
         aboutTitle: '旬を大切に',
         aboutTitleSub: 'About',
         galleryTitle: '空间',
         galleryTitleSub: 'ギャラリー',
+        vipGreeting: '尊敬的贵宾',
+        vipMessage: '您好！感谢您的信任与选择',
+        vipConfirm: '您已在 鮨雲丹 预订成功',
         welcomeLine1: '鮨 雲丹 全体员工恭候您的光临',
         welcomeLine2: '祝您生活愉快，用餐愉悦',
         guestSuffix: ' 位',
@@ -1106,10 +1159,14 @@
         accessTitle: 'アクセス',
         accessTitleSub: 'Access',
         navButton: 'ナビ',
+        phoneHint: '☝️ タップで電話をかける',
         aboutTitle: '旬を大切に',
         aboutTitleSub: 'About',
         galleryTitle: 'ギャラリー',
         galleryTitleSub: 'Gallery',
+        vipGreeting: '尊敬するお客様',
+        vipMessage: 'ご予約いただき誠にありがとうございます',
+        vipConfirm: '鮨雲丹 ご予約確定いたしました',
         welcomeLine1: '鮨 雲丹 一同、心よりお待ちしております',
         welcomeLine2: 'どうぞ素敵なひとときをお過ごしください',
         guestSuffix: ' 名様',
@@ -1260,6 +1317,13 @@
       var emptyNotes = t('emptyNotes');
       var guestSuffix = t('guestSuffix');
 
+      // VIP name greeting
+      var vipNameEl = document.getElementById('vipName');
+      if (vipNameEl) {
+        vipNameEl.textContent = r.name || '';
+        vipNameEl.style.display = r.name ? '' : 'none';
+      }
+
       setText('val-name', r.name, emptyVal);
       setText('val-phone', r.phone, emptyVal);
       setAttr('val-phone', 'href', 'tel:' + (r.phone || '').replace(/[^0-9+]/g, ''));
@@ -1333,11 +1397,6 @@
 
     // Render reservation data
     renderReservation();
-
-    // Logo visibility
-    if (document.getElementById('heroLogo').style.display === 'none') {
-      document.getElementById('heroLogoPlaceholder').classList.add('loaded');
-    }
 
     /* ======================================
        Scroll-triggered Animation

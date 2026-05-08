@@ -438,23 +438,37 @@
 
     .qr-wrapper {
       text-align: center;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      padding: 24px;
+      background: var(--color-highlight);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
     }
 
     .qr-code {
       display: block;
       width: 180px;
       height: 180px;
-      margin: 0 auto;
+      margin: 0 auto 12px;
       border-radius: 8px;
-      background: var(--color-highlight);
+      background: #FFFFFF;
+      padding: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .qr-label {
-      font-size: 11px;
+      font-family: var(--font-serif, serif);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .qr-sub-label {
+      font-size: 10px;
       color: var(--color-text-light);
-      letter-spacing: 0.06em;
-      margin-top: 8px;
+      letter-spacing: 0.04em;
+      opacity: 0.6;
     }
 
     .btn-row {
@@ -645,7 +659,8 @@
         <div class="url-display" id="urlDisplay"></div>
         <div class="qr-wrapper">
           <img class="qr-code" id="qrCode" src="" alt="QR Code" style="display:none">
-          <div class="qr-label" data-i18n="qrLabel">客人扫码即可查看预约</div>
+          <div class="qr-label" data-i18n="qrLabel">扫描二维码查看预约详情</div>
+          <div class="qr-sub-label" data-i18n="qrSubLabel">Scan QR code to view reservation</div>
         </div>
         <div class="btn-row">
           <button type="button" class="btn btn-copy" id="btnCopy">
@@ -656,6 +671,13 @@
           </a>
         </div>
       </div>
+    </div>
+
+    <!-- Staff QR Code -->
+    <div class="card" style="text-align:center; margin-top: 8px;">
+      <p style="font-family: var(--font-serif); font-size: 14px; letter-spacing: 0.06em; color: var(--color-text); margin-bottom: 4px;" data-i18n="staffQrTitle">管理员扫码入口</p>
+      <p style="font-size: 10px; color: var(--color-text-light); letter-spacing: 0.06em; margin-bottom: 14px;" data-i18n="staffQrSub">扫码直达预约管理后台</p>
+      <img id="staffQrCode" src="" alt="Admin QR" style="width:140px;height:140px;border-radius:8px;background:var(--color-highlight);padding:6px;">
     </div>
 
     <!-- Footer -->
@@ -701,12 +723,15 @@
         seatingTable: '散台',
         notesPlaceholder: '过敏/忌口/纪念日等',
         notesHint: '过敏/忌口/纪念日/特殊需求等',
+        staffQrTitle: '管理员扫码入口',
+        staffQrSub: '扫码直达预约管理后台',
         submitButton: '生成链接',
         urlTitle: '预约链接已生成',
         copyButton: '复制链接',
         copiedText: '已复制 ✓',
         previewButton: '预览',
-        qrLabel: '客人扫码即可查看预约',
+        qrLabel: '扫描二维码查看预约详情',
+        qrSubLabel: 'Scan QR code to view your reservation',
         toastCopied: '链接已复制到剪贴板',
         toastFailed: '复制失败，请手动复制',
         weekdaySun: '周日',
@@ -744,12 +769,15 @@
         seatingTable: '散台',
         notesPlaceholder: '忌口・アレルギー・記念日など',
         notesHint: '忌口・アレルギー・記念日・特別なご希望など',
+        staffQrTitle: '管理者QRコード',
+        staffQrSub: 'スキャンして管理画面へ',
         submitButton: 'リンクを生成',
         urlTitle: '生成された予約リンク',
         copyButton: 'リンクをコピー',
         copiedText: 'コピーしました ✓',
         previewButton: 'プレビューを開く',
-        qrLabel: 'QRコードをスキャンしてご確認ください',
+        qrLabel: 'QRコードをスキャンしてご予約をご確認ください',
+        qrSubLabel: 'Scan QR code to view your reservation',
         toastCopied: 'リンクをコピーしました',
         toastFailed: 'コピーに失敗しました',
         weekdaySun: '日曜日',
@@ -1082,6 +1110,17 @@
         toast.classList.remove('show');
       }, 2000);
     }
+
+    /* ======================================
+       Staff QR Code — links to admin page
+       ====================================== */
+    (function() {
+      var adminUrl = window.location.href.split('?')[0];
+      var staffQr = document.getElementById('staffQrCode');
+      if (staffQr) {
+        staffQr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(adminUrl);
+      }
+    })();
 
   })();
   </script>
