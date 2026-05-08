@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <title>预约确认 | 鮨 雲丹</title>
+  <style>
+    /* ========================================
+       CSS Custom Properties — Color Palette
+       ======================================== */
+    :root {
+      --color-bg: #F9F6F0;
+      --color-card: #FFFFFF;
+      --color-text: #2C2416;
+      --color-text-secondary: #6B5E4F;
+      --color-text-light: #9B8E7E;
+      --color-accent: #8B7355;
+      --color-accent-soft: #B8A58B;
+      --color-border: #E5DDD2;
+      --color-border-light: #F0EBE3;
+      --color-highlight: #F5EFE6;
+      --color-overlay: rgba(28, 20, 12, 0.35);
+      --font-serif: 'Times New Roman', 'YuMincho', 'Hiragino Mincho Pro', 'MS PMincho', 'Noto Serif SC', serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans SC', sans-serif;
+      --font-jp: 'YuMincho', 'Hiragino Mincho Pro', 'MS PMincho', 'Noto Serif SC', serif;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ========================================
+       Reset & Base
+       ======================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ========================================
+       Language Toggle
+       ======================================== */
+    .lang-toggle {
+      position: fixed;
+      top: calc(14px + var(--safe-top));
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.65);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .lang-btn.active {
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .lang-btn:active {
+      opacity: 0.7;
+    }
+
+    /* Below hero — dark background, need different toggle style */
+    .lang-toggle-dark {
+      position: fixed;
+      top: calc(14px + var(--safe-top));
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 0;
+      background: rgba(44, 36, 22, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(44, 36, 22, 0.25);
+    }
+
+    .lang-btn-dark {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: rgba(44, 36, 22, 0.6);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .lang-btn-dark.active {
+      color: #2C2416;
+      background: rgba(44, 36, 22, 0.08);
+    }
+
+    /* ========================================
+       Hero Section
+       ======================================== */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      min-height: 420px;
+      max-height: 600px;
+      overflow: hidden;
+      background: #2C2416;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    .hero-bg.loaded {
+      opacity: 1;
+    }
+
+    .hero-bg-placeholder {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #3D3226 0%, #2C2416 40%, #1A1510 100%);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: calc(40px + var(--safe-top)) 24px 40px;
+      background: linear-gradient(
+        180deg,
+        rgba(20, 15, 8, 0.55) 0%,
+        rgba(20, 15, 8, 0.25) 50%,
+        rgba(20, 15, 8, 0.5) 100%
+      );
+      color: #FFFFFF;
+    }
+
+    .hero-logo {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 28px;
+      object-fit: contain;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .hero-logo.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-logo-placeholder {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 28px;
+      color: rgba(255,255,255,0.4);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .hero-logo-placeholder.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-shop-name {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 5vw, 38px);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
+    }
+
+    .hero-shop-name.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-shop-name-sub {
+      font-family: var(--font-jp);
+      font-size: clamp(11px, 1.8vw, 14px);
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 36px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+    }
+
+    .hero-shop-name-sub.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-tagline {
+      font-family: var(--font-jp);
+      font-size: clamp(14px, 2vw, 16px);
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.55);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.8s ease 0.45s, transform 0.8s ease 0.45s;
+    }
+
+    .hero-tagline.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 32px;
+      background: rgba(255,255,255,0.25);
+      animation: scrollPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.25; height: 32px; }
+      50% { opacity: 0.6; height: 40px; }
+    }
+
+    /* ========================================
+       Main Content Container
+       ======================================== */
+    .main-content {
+      position: relative;
+      z-index: 1;
+      margin-top: -20px;
+      border-radius: 20px 20px 0 0;
+      background: var(--color-bg);
+      padding-bottom: calc(40px + var(--safe-bottom));
+    }
+
+    /* ========================================
+       Welcome Section
+       ======================================== */
+    .welcome-section {
+      text-align: center;
+      padding: 56px 32px 48px;
+      max-width: 480px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .welcome-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .welcome-line {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 2.4;
+      letter-spacing: 0.12em;
+      color: var(--color-text-secondary);
+    }
+
+    .welcome-line + .welcome-line {
+      margin-top: 0;
+    }
+
+    .welcome-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--color-accent-soft);
+      margin: 32px auto 0;
+      opacity: 0.5;
+    }
+
+    /* ========================================
+       Decorative Text — OMAKASE
+       ======================================== */
+    .deco-omakase {
+      text-align: center;
+      padding: 24px 20px 36px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .deco-omakase-text {
+      font-family: var(--font-sans);
+      font-size: clamp(12px, 2.5vw, 15px);
+      letter-spacing: 0.35em;
+      color: var(--color-text-light);
+      opacity: 0.22;
+      font-weight: 300;
+    }
+
+    /* ========================================
+       Reservation Card
+       ======================================== */
+    .reservation-section {
+      position: relative;
+      padding: 0 24px 48px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Subtle vertical decorative text alongside card */
+    .deco-yoyaku {
+      position: absolute;
+      right: -8px;
+      top: 60px;
+      font-family: var(--font-serif);
+      font-size: 14px;
+      letter-spacing: 0.6em;
+      color: var(--color-text-light);
+      opacity: 0.12;
+      writing-mode: vertical-rl;
+      -webkit-writing-mode: vertical-rl;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .reservation-card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 36px 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reservation-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .card-header-icon {
+      display: inline-block;
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: var(--color-accent);
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--color-text);
+    }
+
+    .card-title-sub {
+      font-family: var(--font-jp);
+      font-size: 12px;
+      color: var(--color-text-light);
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .card-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--color-accent-soft);
+      margin: 16px auto 0;
+    }
+
+    /* Detail Items */
+    .detail-list {
+      list-style: none;
+    }
+
+    .detail-item {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .detail-item:last-of-type {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      color: var(--color-text);
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+    }
+
+    .detail-value.empty {
+      color: var(--color-text-light);
+      font-style: italic;
+      font-size: 15px;
+    }
+
+    .detail-value a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    /* Notes Section */
+    .notes-section {
+      margin-top: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .notes-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .notes-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-accent);
+    }
+
+    .notes-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-accent);
+      letter-spacing: 0.08em;
+    }
+
+    .notes-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--color-text);
+      letter-spacing: 0.02em;
+      padding: 12px 16px;
+      background: var(--color-highlight);
+      border-radius: 8px;
+      min-height: 20px;
+    }
+
+    .notes-content.empty {
+      color: var(--color-text-light);
+      font-style: italic;
+      font-size: 14px;
+      background: transparent;
+      padding: 0;
+    }
+
+    /* ========================================
+       Brand Signature
+       ======================================== */
+    .brand-signature {
+      text-align: center;
+      padding: 48px 24px;
+      max-width: 480px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .brand-signature.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .brand-line-1 {
+      font-family: var(--font-serif);
+      font-size: 15px;
+      letter-spacing: 0.3em;
+      color: var(--color-accent-soft);
+      margin-bottom: 4px;
+    }
+
+    .brand-line-2 {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      color: var(--color-text-light);
+      text-transform: uppercase;
+      opacity: 0.55;
+    }
+
+    .brand-line-3 {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      letter-spacing: 0.4em;
+      color: var(--color-text-light);
+      opacity: 0.4;
+    }
+
+    /* ========================================
+       Access Section
+       ======================================== */
+    .access-section {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .access-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-heading {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+
+    .section-heading-sub {
+      font-size: 11px;
+      color: var(--color-text-light);
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+    }
+
+    .access-card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .access-address {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--color-text);
+      margin-bottom: 16px;
+    }
+
+    .access-phone {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-serif);
+      font-size: 17px;
+      color: var(--color-accent);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+      transition: opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .access-phone:active {
+      opacity: 0.6;
+    }
+
+    .access-note {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--color-text-secondary);
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      background: var(--color-highlight);
+      border-radius: 8px;
+    }
+
+    .btn-map {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--color-text);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-map:active {
+      background: var(--color-highlight);
+      border-color: var(--color-accent-soft);
+    }
+
+    /* ========================================
+       About Section
+       ======================================== */
+    .about-section {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .about-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .about-text {
+      font-size: 14px;
+      line-height: 2.2;
+      color: var(--color-text-secondary);
+      letter-spacing: 0.03em;
+    }
+
+    .about-text p + p {
+      margin-top: 20px;
+    }
+
+    .about-signature {
+      margin-top: 24px;
+      font-family: var(--font-jp);
+      font-size: 13px;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+    }
+
+    /* ========================================
+       Gallery Section
+       ======================================== */
+    .gallery-section {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .gallery-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      background: var(--color-border-light);
+      aspect-ratio: 1;
+    }
+
+    .gallery-item:first-child {
+      grid-column: 1 / -1;
+      aspect-ratio: 16 / 9;
+    }
+
+    .gallery-item:nth-child(4) {
+      grid-column: 1 / -1;
+      aspect-ratio: 3 / 2;
+    }
+
+    .gallery-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .gallery-img.loaded {
+      opacity: 1;
+    }
+
+    .gallery-placeholder {
+      position: absolute;
+      inset: 0;
+      background: var(--color-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-light);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ========================================
+       Decorative Text — Sushi Uni Gubei
+       ======================================== */
+    .deco-gubei {
+      text-align: center;
+      padding: 8px 20px 40px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .deco-gubei-text {
+      font-family: var(--font-serif);
+      font-size: clamp(13px, 2.8vw, 16px);
+      letter-spacing: 0.3em;
+      color: var(--color-text-light);
+      opacity: 0.18;
+      font-weight: 300;
+    }
+
+    /* ========================================
+       Footer
+       ======================================== */
+    .footer {
+      text-align: center;
+      padding: 40px 24px 48px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .footer-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--color-border);
+      margin: 0 auto 24px;
+    }
+
+    .footer-shop {
+      font-size: 11px;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .footer-copyright {
+      font-size: 9px;
+      color: var(--color-text-light);
+      opacity: 0.35;
+      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+
+    /* ========================================
+       Responsive — Larger Screens
+       ======================================== */
+    @media (min-width: 768px) {
+      .hero {
+        height: 65vh;
+        max-height: 560px;
+      }
+
+      .reservation-card {
+        padding: 48px 40px;
+      }
+
+      section {
+        padding: 56px 32px;
+      }
+
+      .gallery-grid {
+        gap: 10px;
+      }
+
+      .detail-label {
+        font-size: 12px;
+      }
+
+      .detail-value {
+        font-size: 18px;
+      }
+
+      .deco-yoyaku {
+        right: -20px;
+        font-size: 16px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero {
+        height: 60vh;
+        max-height: 640px;
+      }
+
+      .reservation-card {
+        padding: 56px 48px;
+        border-radius: 16px;
+      }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .gallery-item:first-child {
+        grid-column: 1 / -1;
+        aspect-ratio: 21 / 9;
+      }
+
+      .gallery-item:nth-child(4) {
+        grid-column: span 2;
+        aspect-ratio: 3 / 2;
+      }
+    }
+
+    /* ========================================
+       Utility
+       ======================================== */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Language Toggle — Hero overlay (light text on dark bg) -->
+  <div class="lang-toggle" id="langToggle" aria-label="语言切换">
+    <button class="lang-btn active" data-lang="zh" aria-label="切换为中文">ZH</button>
+    <button class="lang-btn" data-lang="ja" aria-label="日本語に切替">JA</button>
+  </div>
+
+  <!-- ========================================
+       Hero Section
+       ======================================== -->
+  <header class="hero" id="hero">
+    <div class="hero-bg-placeholder" aria-hidden="true"></div>
+    <img
+      class="hero-bg"
+      id="heroBg"
+      src="tttsss/store1.jpeg"
+      alt=""
+      loading="eager"
+      decoding="async"
+      onload="this.classList.add('loaded')"
+      onerror="this.style.display='none'"
+    >
+    <div class="hero-overlay">
+      <img
+        class="hero-logo"
+        id="heroLogo"
+        src="tttsss/logo.jpg"
+        alt="鮨 雲丹"
+        onload="this.classList.add('loaded')"
+        onerror="this.style.display='none'"
+      >
+      <div class="hero-logo-placeholder" id="heroLogoPlaceholder">雲</div>
+      <h1 class="hero-shop-name" id="heroShopName">鮨 雲丹</h1>
+      <p class="hero-shop-name-sub" id="heroShopNameSub">SUSHI UNI · SHANGHAI</p>
+      <p class="hero-tagline" id="heroTagline">旬之味，静时光。</p>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true"></div>
+  </header>
+
+  <!-- ========================================
+       Main Content
+       ======================================== -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Welcome Section -->
+    <section class="welcome-section" id="welcomeSection">
+      <p class="welcome-line" data-i18n="welcomeLine1">鮨 雲丹 全体员工恭候您的光临</p>
+      <p class="welcome-line" data-i18n="welcomeLine2">祝您生活愉快，用餐愉悦</p>
+      <div class="welcome-divider"></div>
+    </section>
+
+    <!-- Decorative: OMAKASE·SHANGHAI -->
+    <div class="deco-omakase" aria-hidden="true">
+      <p class="deco-omakase-text">OMAKASE · SHANGHAI</p>
+    </div>
+
+    <!-- Reservation Card -->
+    <div class="reservation-section">
+      <div class="deco-yoyaku" aria-hidden="true">御 予 約</div>
+      <div class="reservation-card" id="reservationCard">
+        <div class="card-header">
+          <div class="card-header-icon" aria-hidden="true">—</div>
+          <h2 class="card-title" data-i18n="reservationTitle">预约信息</h2>
+          <p class="card-title-sub" data-i18n="reservationTitleSub">ご予約情報</p>
+          <div class="card-divider"></div>
+        </div>
+        <ul class="detail-list">
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelName">姓名</div>
+            <div class="detail-value" id="val-name">—</div>
+          </li>
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelPhone">电话</div>
+            <a class="detail-value" id="val-phone" href="">—</a>
+          </li>
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelDate">到店日期</div>
+            <div class="detail-value" id="val-date">—</div>
+          </li>
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelTime">到店时间</div>
+            <div class="detail-value" id="val-service-time">—</div>
+          </li>
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelGuests">人数</div>
+            <div class="detail-value" id="val-guests">—</div>
+          </li>
+          <li class="detail-item">
+            <div class="detail-label" data-i18n="labelSeating">席位</div>
+            <div class="detail-value" id="val-seating">—</div>
+          </li>
+        </ul>
+        <div class="notes-section">
+          <div class="notes-header">
+            <div class="notes-dot"></div>
+            <span class="notes-title" data-i18n="labelNotes">备注</span>
+          </div>
+          <div class="notes-content" id="val-notes">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Brand Signature -->
+    <div class="brand-signature" id="brandSignature">
+      <p class="brand-line-1">鮨 雲丹</p>
+      <p class="brand-line-2">SUSHI UNI SHANGHAI</p>
+      <p class="brand-line-3">CHANGNING</p>
+    </div>
+
+    <!-- Access Section -->
+    <div class="access-section" id="accessSection">
+      <h2 class="section-heading" data-i18n="accessTitle">门店信息</h2>
+      <p class="section-heading-sub" data-i18n="accessTitleSub">アクセス</p>
+      <div class="access-card">
+        <div class="access-address" id="shop-address"></div>
+        <a class="access-phone" id="shop-phone-link" href="">
+          <span aria-hidden="true">☏</span>
+          <span id="shop-phone"></span>
+        </a>
+        <div class="access-note" id="shop-access-note"></div>
+        <a class="btn-map" id="shop-map-link" href="#" target="_blank" rel="noopener">
+          <span aria-hidden="true">→</span>
+          <span data-i18n="navButton">导航</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="about-section" id="aboutSection">
+      <h2 class="section-heading" data-i18n="aboutTitle">旬を大切に</h2>
+      <p class="section-heading-sub" data-i18n="aboutTitleSub">About</p>
+      <div class="about-text" id="about-text"></div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="gallery-section" id="gallerySection">
+      <h2 class="section-heading" data-i18n="galleryTitle">空间</h2>
+      <p class="section-heading-sub" data-i18n="galleryTitleSub">ギャラリー</p>
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 01</div>
+          <img class="gallery-img" src="tttsss/store2.jpg" alt="" loading="lazy" decoding="async"
+            onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 02</div>
+          <img class="gallery-img" src="tttsss/sushi1.jpg" alt="" loading="lazy" decoding="async"
+            onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 03</div>
+          <img class="gallery-img" src="tttsss/suhsi2.jpg" alt="" loading="lazy" decoding="async"
+            onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 04</div>
+          <img class="gallery-img" src="tttsss/food1.JPG" alt="" loading="lazy" decoding="async"
+            onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 05</div>
+          <img class="gallery-img" src="tttsss/food2.jpg" alt="" loading="lazy" decoding="async"
+            onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative: Sushi Uni · GuBei · 上海 -->
+    <div class="deco-gubei" aria-hidden="true">
+      <p class="deco-gubei-text">Sushi Uni · GuBei · 上海</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-divider"></div>
+      <p class="footer-shop">鮨 雲丹 · SUSHI UNI</p>
+      <p class="footer-copyright">页面设计 by 雲丹·锦辉 ©（版权所有）</p>
+    </footer>
+
+  </main>
+
+  <!-- ========================================
+       JavaScript — i18n, Data & Rendering
+       ======================================== -->
+  <script>
+  (function() {
+    /* ======================================
+       Read URL Parameters (must be first)
+       ====================================== */
+    var params = new URLSearchParams(window.location.search);
+
+    /* ======================================
+       i18n — Internationalization
+       ====================================== */
+    const i18n = {
+      zh: {
+        reservationTitle: '预约信息',
+        reservationTitleSub: 'ご予約情報',
+        labelName: '姓名',
+        labelPhone: '电话',
+        labelDate: '到店日期',
+        labelTime: '到店时间',
+        labelGuests: '人数',
+        labelSeating: '席位',
+        labelNotes: '备注',
+        emptyValue: '待填写',
+        emptyNotes: '无特殊要求',
+        accessTitle: '门店信息',
+        accessTitleSub: 'アクセス',
+        navButton: '导航',
+        aboutTitle: '旬を大切に',
+        aboutTitleSub: 'About',
+        galleryTitle: '空间',
+        galleryTitleSub: 'ギャラリー',
+        welcomeLine1: '鮨 雲丹 全体员工恭候您的光临',
+        welcomeLine2: '祝您生活愉快，用餐愉悦',
+        guestSuffix: ' 位',
+        guestSuffixJP: '名様'
+      },
+      ja: {
+        reservationTitle: 'ご予約の確認',
+        reservationTitleSub: 'Reservation Details',
+        labelName: 'お名前',
+        labelPhone: 'お電話番号',
+        labelDate: 'ご来店日',
+        labelTime: 'お時間',
+        labelGuests: '人数',
+        labelSeating: 'お席',
+        labelNotes: 'ご要望・備考',
+        emptyValue: '—',
+        emptyNotes: '特になし',
+        accessTitle: 'アクセス',
+        accessTitleSub: 'Access',
+        navButton: 'ナビ',
+        aboutTitle: '旬を大切に',
+        aboutTitleSub: 'About',
+        galleryTitle: 'ギャラリー',
+        galleryTitleSub: 'Gallery',
+        welcomeLine1: '鮨 雲丹 一同、心よりお待ちしております',
+        welcomeLine2: 'どうぞ素敵なひとときをお過ごしください',
+        guestSuffix: ' 名様',
+        guestSuffixJP: ' 名様'
+      }
+    };
+
+    let currentLang = 'zh';
+
+    function t(key) {
+      return (i18n[currentLang] && i18n[currentLang][key]) || key;
+    }
+
+    function setLang(lang) {
+      if (lang === currentLang) return;
+      currentLang = lang;
+
+      // Update all elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        var text = t(key);
+        if (text) el.textContent = text;
+      });
+
+      // Update placeholder attributes
+      document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n-ph');
+        var text = t(key);
+        if (text) el.setAttribute('placeholder', text);
+      });
+
+      // Update lang buttons
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+
+      // Re-render reservation data with correct language suffixes
+      renderReservation();
+
+      // Update page title
+      document.title = t('reservationTitle') + ' | 鮨 雲丹';
+
+      // Update html lang attribute
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'ja';
+
+      // Persist preference
+      try { localStorage.setItem('yuyue-lang', lang); } catch(e) {}
+    }
+
+    // Language toggle buttons
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        setLang(this.getAttribute('data-lang'));
+      });
+    });
+
+    // Determine initial language: URL param > localStorage > default 'zh'
+    var urlLang = params.get('lang');
+    if (urlLang && (urlLang === 'zh' || urlLang === 'ja')) {
+      currentLang = urlLang;
+    } else {
+      try {
+        var saved = localStorage.getItem('yuyue-lang');
+        if (saved && (saved === 'zh' || saved === 'ja')) {
+          currentLang = saved;
+        }
+      } catch(e) {}
+    }
+    // Update button states
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
+    });
+    document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'ja';
+
+    /* ======================================
+       Shop Configuration
+       ====================================== */
+    var shop = {
+      name:       '鮨 雲丹',
+      nameSub:    'SUSHI UNI · SHANGHAI',
+      taglineZH:  '旬之味，静时光。',
+      taglineJA:  '旬の味と静かな時間を。',
+      address:    '上海市长宁区古北路1088号3F',
+      phone:      '13482832778',
+      accessNoteZH: '15号线至红宝石路站2号出口，步行390米可到。如果您自驾前来，也可点击导航链接，黄金城道路侧两旁有停车位。',
+      accessNoteJA: '地下鉄15号線 紅宝石路駅 2番出口より徒歩約390m。お車でお越しの際は、黄金城道沿いに駐車スペースがございます。',
+      mapUrl:     'https://surl.amap.com/1lADHFM1eagh',
+      aboutTitle: '旬を大切に',
+      aboutTextZH: '每日严选当季最鲜食材。\n\n一握之间，蕴含季节流转与匠人之心。\n\n静候您的光临，慢享一段宁静时光。',
+      aboutTextJA: '毎朝、市場でその日最も輝く食材を選びます。\n\n握りひとつに、季節の移ろいと生産者の想いを込めて。\n\nどうぞ、静かな時間をお過ごしください。',
+      aboutSignature: '— 鮨 雲丹 主人'
+    };
+
+    /* ======================================
+       Reservation Data (fallback / demo)
+       ====================================== */
+    var reservation = {
+      name:     '',
+      phone:    '',
+      date:     '',
+      weekday:  '',
+      service:  '',
+      time:     '',
+      guests:   '',
+      seating:  '',
+      notes:    ''
+    };
+
+    /* ======================================
+       Read URL Parameters
+       ====================================== */
+    for (var key in reservation) {
+      if (reservation.hasOwnProperty(key) && params.has(key)) {
+        reservation[key] = params.get(key);
+      }
+    }
+
+    /* ======================================
+       Render Functions
+       ====================================== */
+    function setText(id, value, fallback) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var v = value || fallback || '';
+      el.textContent = v;
+      if (!value || value.trim() === '') {
+        el.classList.add('empty');
+      } else {
+        el.classList.remove('empty');
+      }
+    }
+
+    function setHTML(id, html) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = html;
+    }
+
+    function setAttr(id, attr, value) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.setAttribute(attr, value);
+    }
+
+    function renderReservation() {
+      var r = reservation;
+      var emptyVal = t('emptyValue');
+      var emptyNotes = t('emptyNotes');
+      var guestSuffix = t('guestSuffix');
+
+      setText('val-name', r.name, emptyVal);
+      setText('val-phone', r.phone, emptyVal);
+      setAttr('val-phone', 'href', 'tel:' + (r.phone || '').replace(/[^0-9+]/g, ''));
+
+      // Date + Weekday
+      if (r.date) {
+        var dateStr = r.date;
+        if (r.weekday) dateStr += '（' + r.weekday + '）';
+        setText('val-date', dateStr);
+      } else {
+        setText('val-date', '', emptyVal);
+      }
+
+      // Service + Time
+      if (r.service || r.time) {
+        var parts = [];
+        if (r.service) parts.push(r.service);
+        if (r.time) parts.push(r.time);
+        setText('val-service-time', parts.join('  ·  '));
+      } else {
+        setText('val-service-time', '', emptyVal);
+      }
+
+      // Guests
+      setText('val-guests', r.guests ? r.guests + guestSuffix : '', emptyVal);
+
+      // Seating
+      setText('val-seating', r.seating, emptyVal);
+
+      // Notes
+      var notesHTML = r.notes ? r.notes.replace(/\n/g, '<br>') : emptyNotes;
+      setHTML('val-notes', notesHTML);
+      var notesEl = document.getElementById('val-notes');
+      if (!r.notes || r.notes.trim() === '') {
+        notesEl.classList.add('empty');
+      } else {
+        notesEl.classList.remove('empty');
+      }
+
+      // Update tagline based on language
+      document.getElementById('heroTagline').textContent =
+        currentLang === 'zh' ? shop.taglineZH : shop.taglineJA;
+
+      // Update access note based on language
+      document.getElementById('shop-access-note').textContent =
+        currentLang === 'zh' ? shop.accessNoteZH : shop.accessNoteJA;
+
+      // Update about text based on language
+      var aboutText = currentLang === 'zh' ? shop.aboutTextZH : shop.aboutTextJA;
+      var aboutParas = aboutText.split('\n\n').filter(Boolean);
+      document.getElementById('about-text').innerHTML =
+        aboutParas.map(function(p) { return '<p>' + p.replace(/\n/g, '<br>') + '</p>'; }).join('') +
+        '<div class="about-signature">' + shop.aboutSignature + '</div>';
+    }
+
+    // --- Initial Render ---
+    // Shop info
+    document.getElementById('heroShopName').textContent = shop.name;
+    document.getElementById('heroShopNameSub').textContent = shop.nameSub;
+    document.getElementById('shop-address').textContent = shop.address;
+    document.getElementById('shop-phone').textContent = shop.phone;
+    document.getElementById('shop-phone-link').href = 'tel:' + shop.phone.replace(/[^0-9+]/g, '');
+    document.getElementById('shop-map-link').href = shop.mapUrl;
+
+    // Apply saved language or default ZH
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      var text = t(key);
+      if (text) el.textContent = text;
+    });
+
+    // Render reservation data
+    renderReservation();
+
+    // Logo visibility
+    if (document.getElementById('heroLogo').style.display === 'none') {
+      document.getElementById('heroLogoPlaceholder').classList.add('loaded');
+    }
+
+    /* ======================================
+       Scroll-triggered Animation
+       ====================================== */
+    var observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.1
+    };
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe animatable sections
+    [
+      'welcomeSection',
+      'reservationCard',
+      'brandSignature',
+      'accessSection',
+      'aboutSection',
+      'gallerySection'
+    ].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    // Hero text animation on load
+    function animateHero() {
+      setTimeout(function() {
+        var els = ['heroShopName', 'heroShopNameSub', 'heroTagline'];
+        els.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.add('visible');
+        });
+      }, 200);
+    }
+
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      animateHero();
+    } else {
+      window.addEventListener('DOMContentLoaded', animateHero);
+    }
+
+  })();
+  </script>
+
+</body>
+</html>

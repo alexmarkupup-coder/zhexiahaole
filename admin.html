@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>预约管理 | 鮨 雲丹</title>
+  <style>
+    /* ========================================
+       CSS Custom Properties
+       ======================================== */
+    :root {
+      --color-bg: #F9F6F0;
+      --color-card: #FFFFFF;
+      --color-text: #2C2416;
+      --color-text-secondary: #6B5E4F;
+      --color-text-light: #9B8E7E;
+      --color-accent: #8B7355;
+      --color-accent-soft: #B8A58B;
+      --color-border: #E5DDD2;
+      --color-border-light: #F0EBE3;
+      --color-highlight: #F5EFE6;
+      --color-success: #6B8B6F;
+      --color-error: #B85450;
+      --font-serif: 'Times New Roman', 'YuMincho', 'Hiragino Mincho Pro', 'Noto Serif SC', serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans SC', sans-serif;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ========================================
+       Reset & Base
+       ======================================== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.8;
+      letter-spacing: 0.02em;
+      min-height: 100vh;
+      padding: calc(20px + var(--safe-top)) 20px calc(40px + var(--safe-bottom));
+    }
+
+    /* ========================================
+       Password Gate — Fullscreen Overlay
+       ======================================== */
+    .password-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--color-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .password-gate.hidden {
+      display: none;
+    }
+
+    .password-card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 48px 32px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    .password-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: var(--color-accent);
+      opacity: 0.6;
+    }
+
+    .password-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--color-text);
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .password-title-sub {
+      font-size: 11px;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+      margin-bottom: 28px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 18px;
+      letter-spacing: 0.3em;
+      text-align: center;
+      color: var(--color-text);
+      background: var(--color-highlight);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .password-input:focus {
+      border-color: var(--color-accent-soft);
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.08);
+    }
+
+    .password-input.error {
+      border-color: var(--color-error);
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .password-error {
+      font-size: 12px;
+      color: var(--color-error);
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .password-error.show {
+      opacity: 1;
+    }
+
+    .password-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 14px;
+      margin-top: 16px;
+      background: #2C2416;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .password-btn:active {
+      background: #1A1510;
+    }
+
+    /* ========================================
+       Language Toggle
+       ======================================== */
+    .lang-toggle {
+      position: fixed;
+      top: calc(14px + var(--safe-top));
+      right: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 0;
+      background: rgba(44, 36, 22, 0.06);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--color-text-light);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .lang-btn.active {
+      color: var(--color-text);
+      background: rgba(139, 115, 85, 0.1);
+    }
+
+    .lang-btn:active {
+      opacity: 0.7;
+    }
+
+    /* ========================================
+       Layout
+       ======================================== */
+    .admin-container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ========================================
+       Header
+       ======================================== */
+    .admin-header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-top: 16px;
+    }
+
+    .admin-logo {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      color: var(--color-accent);
+      letter-spacing: 0.06em;
+      margin-bottom: 2px;
+    }
+
+    .admin-sub {
+      font-size: 12px;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+    }
+
+    /* ========================================
+       Card
+       ======================================== */
+    .card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 32px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    /* ========================================
+       Form
+       ======================================== */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-light);
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .form-label-required::after {
+      content: ' *';
+      color: var(--color-accent);
+      font-size: 11px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      color: var(--color-text);
+      background: var(--color-card);
+      letter-spacing: 0.02em;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--color-accent-soft);
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.08);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--color-text-light);
+      opacity: 0.6;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239B8E7E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.7;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--color-text-light);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Inline row */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ========================================
+       Buttons
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: #2C2416;
+      color: #FFFFFF;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: #3D3226;
+    }
+
+    .btn-primary:active {
+      background: #1A1510;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      width: 100%;
+    }
+
+    .btn-secondary:active {
+      background: var(--color-highlight);
+    }
+
+    .btn-copy {
+      background: var(--color-highlight);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      width: 100%;
+    }
+
+    .btn-copy.copied {
+      background: #E8F0E8;
+      border-color: var(--color-success);
+      color: var(--color-success);
+    }
+
+    /* ========================================
+       URL Output Area
+       ======================================== */
+    .url-output {
+      margin-top: 0;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s ease, max-height 0.4s ease, margin-top 0.4s ease;
+    }
+
+    .url-output.visible {
+      opacity: 1;
+      max-height: 400px;
+      margin-top: 24px;
+    }
+
+    .url-display {
+      padding: 14px 16px;
+      background: var(--color-highlight);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+      color: var(--color-text-secondary);
+      word-break: break-all;
+      line-height: 1.6;
+      user-select: all;
+      margin-bottom: 12px;
+      border: 1px solid var(--color-border-light);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(40px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #2C2416;
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ========================================
+       Footer
+       ======================================== */
+    .admin-footer {
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+
+    .admin-footer-text {
+      font-size: 9px;
+      color: var(--color-text-light);
+      opacity: 0.3;
+      letter-spacing: 0.06em;
+    }
+
+    /* ========================================
+       Responsive
+       ======================================== */
+    @media (min-width: 768px) {
+      body {
+        padding: 40px 32px;
+      }
+
+      .card {
+        padding: 40px 36px;
+      }
+
+      .admin-logo {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================
+       Password Gate
+       ======================================== -->
+  <div class="password-gate" id="passwordGate">
+    <div class="password-card">
+      <div class="password-icon" aria-hidden="true">◈</div>
+      <h1 class="password-title" data-i18n="passwordTitle">管理员验证</h1>
+      <p class="password-title-sub" data-i18n="passwordTitleSub">管理者認証</p>
+      <input
+        class="password-input"
+        type="password"
+        id="passwordInput"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="8"
+        placeholder="····"
+        autocomplete="off"
+      >
+      <p class="password-error" id="passwordError" data-i18n="passwordError">密码错误，请重试</p>
+      <button class="password-btn" id="passwordBtn" data-i18n="passwordButton">确认</button>
+    </div>
+  </div>
+
+  <!-- Language Toggle -->
+  <div class="lang-toggle" id="langToggle" aria-label="语言切换">
+    <button class="lang-btn active" data-lang="zh" aria-label="切换为中文">ZH</button>
+    <button class="lang-btn" data-lang="ja" aria-label="日本語に切替">JA</button>
+  </div>
+
+  <div class="admin-container">
+
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="admin-logo">鮨 雲丹</div>
+      <p class="admin-sub">SUSHI UNI · Reservation Manager</p>
+    </header>
+
+    <!-- Form Card -->
+    <div class="card">
+      <h1 class="card-title" data-i18n="formTitle">填写预约信息</h1>
+
+      <form id="reservationForm" autocomplete="off">
+
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label form-label-required" for="name" data-i18n="labelName">客人姓名</label>
+          <input class="form-input" type="text" id="name" data-i18n-ph="namePlaceholder" placeholder="例：张三" required>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group">
+          <label class="form-label form-label-required" for="phone" data-i18n="labelPhone">联系电话</label>
+          <input class="form-input" type="tel" id="phone" data-i18n-ph="phonePlaceholder" placeholder="例：138-0000-0000" required>
+        </div>
+
+        <!-- Date + Weekday -->
+        <div class="form-group">
+          <label class="form-label form-label-required" for="date" data-i18n="labelDate">到店日期</label>
+          <div class="form-row">
+            <input class="form-input" type="date" id="date" required>
+            <input class="form-input" type="text" id="weekday" data-i18n-ph="weekdayPlaceholder" placeholder="曜日" readonly style="background: var(--color-highlight); color: var(--color-text-secondary);">
+          </div>
+          <p class="form-hint" data-i18n="weekdayHint">曜日根据日期自动计算</p>
+        </div>
+
+        <!-- Service -->
+        <div class="form-group">
+          <label class="form-label form-label-required" for="service" data-i18n="labelService">时段</label>
+          <select class="form-select" id="service" required>
+            <option value="" disabled selected data-i18n="selectService">请选择时段</option>
+            <option value="午市" data-i18n="serviceLunch">午市（12:00～）</option>
+            <option value="晚市" data-i18n="serviceDinner">晚市（18:00～）</option>
+          </select>
+        </div>
+
+        <!-- Time -->
+        <div class="form-group">
+          <label class="form-label form-label-required" for="time" data-i18n="labelTime">到店时间</label>
+          <input class="form-input" type="time" id="time" required>
+        </div>
+
+        <!-- Guests + Seating -->
+        <div class="form-group">
+          <label class="form-label form-label-required" data-i18n="labelGuestsSeating">人数 ／ 席位</label>
+          <div class="form-row">
+            <select class="form-select" id="guests" required>
+              <option value="" disabled selected data-i18n="selectGuests">人数</option>
+              <option value="1">1 位</option>
+              <option value="2">2 位</option>
+              <option value="3">3 位</option>
+              <option value="4">4 位</option>
+              <option value="5">5 位</option>
+              <option value="6">6 位</option>
+              <option value="7">7 位</option>
+              <option value="8">8 位</option>
+            </select>
+            <select class="form-select" id="seating" required>
+              <option value="" disabled selected data-i18n="selectSeating">席位</option>
+              <option value="吧台" data-i18n="seatingCounter">吧台</option>
+              <option value="包房" data-i18n="seatingRoom">包房</option>
+              <option value="散台" data-i18n="seatingTable">散台</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="form-label" for="notes" data-i18n="labelNotes">备注</label>
+          <textarea class="form-textarea" id="notes" data-i18n-ph="notesPlaceholder" placeholder="过敏/忌口/纪念日等"></textarea>
+          <p class="form-hint" data-i18n="notesHint">过敏/忌口/纪念日/特殊需求等</p>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">
+          <span data-i18n="submitButton">生成链接</span>
+        </button>
+      </form>
+
+      <!-- URL Output (hidden initially) -->
+      <div class="url-output" id="urlOutput">
+        <div class="card-title" style="margin-bottom: 12px; font-size: 14px;" data-i18n="urlTitle">预约链接已生成</div>
+        <div class="url-display" id="urlDisplay"></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-copy" id="btnCopy">
+            <span id="btnCopyLabel" data-i18n="copyButton">复制链接</span>
+          </button>
+          <a class="btn btn-secondary" id="btnOpen" href="#" target="_blank" rel="noopener">
+            <span data-i18n="previewButton">预览</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="admin-footer">
+      <p class="admin-footer-text">页面设计 by 雲丹·锦辉 ©（版权所有）</p>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+  (function() {
+    /* ======================================
+       i18n — Internationalization
+       ====================================== */
+    var i18n = {
+      zh: {
+        passwordTitle: '管理员验证',
+        passwordTitleSub: '管理者認証',
+        passwordButton: '确认',
+        passwordError: '密码错误，请重试',
+        formTitle: '填写预约信息',
+        labelName: '客人姓名',
+        labelPhone: '联系电话',
+        labelDate: '到店日期',
+        labelTime: '到店时间',
+        labelService: '时段',
+        labelGuestsSeating: '人数 ／ 席位',
+        labelNotes: '备注',
+        namePlaceholder: '例：张三',
+        phonePlaceholder: '例：138-0000-0000',
+        weekdayPlaceholder: '曜日',
+        weekdayHint: '曜日根据日期自动计算',
+        selectService: '请选择时段',
+        selectGuests: '人数',
+        selectSeating: '席位',
+        serviceLunch: '午市（12:00～）',
+        serviceDinner: '晚市（18:00～）',
+        seatingCounter: '吧台',
+        seatingRoom: '包房',
+        seatingTable: '散台',
+        notesPlaceholder: '过敏/忌口/纪念日等',
+        notesHint: '过敏/忌口/纪念日/特殊需求等',
+        submitButton: '生成链接',
+        urlTitle: '预约链接已生成',
+        copyButton: '复制链接',
+        copiedText: '已复制 ✓',
+        previewButton: '预览',
+        toastCopied: '链接已复制到剪贴板',
+        toastFailed: '复制失败，请手动复制',
+        weekdaySun: '周日',
+        weekdayMon: '周一',
+        weekdayTue: '周二',
+        weekdayWed: '周三',
+        weekdayThu: '周四',
+        weekdayFri: '周五',
+        weekdaySat: '周六'
+      },
+      ja: {
+        passwordTitle: '管理者認証',
+        passwordTitleSub: 'Admin Authentication',
+        passwordButton: '確認',
+        passwordError: 'パスワードが違います',
+        formTitle: '予約情報の入力',
+        labelName: 'お名前',
+        labelPhone: 'お電話番号',
+        labelDate: 'ご来店日',
+        labelTime: 'ご来店時間',
+        labelService: '時間帯',
+        labelGuestsSeating: '人数 ／ お席',
+        labelNotes: 'ご要望・備考',
+        namePlaceholder: '例：山田 太郎',
+        phonePlaceholder: '例：090-1234-5678',
+        weekdayPlaceholder: '曜日',
+        weekdayHint: '曜日は日付から自動計算されます',
+        selectService: '選択してください',
+        selectGuests: '人数',
+        selectSeating: '席種',
+        serviceLunch: '昼の部（12:00〜）',
+        serviceDinner: '夜の部（18:00〜）',
+        seatingCounter: '吧台',
+        seatingRoom: '包房',
+        seatingTable: '散台',
+        notesPlaceholder: '忌口・アレルギー・記念日など',
+        notesHint: '忌口・アレルギー・記念日・特別なご希望など',
+        submitButton: 'リンクを生成',
+        urlTitle: '生成された予約リンク',
+        copyButton: 'リンクをコピー',
+        copiedText: 'コピーしました ✓',
+        previewButton: 'プレビューを開く',
+        toastCopied: 'リンクをコピーしました',
+        toastFailed: 'コピーに失敗しました',
+        weekdaySun: '日曜日',
+        weekdayMon: '月曜日',
+        weekdayTue: '火曜日',
+        weekdayWed: '水曜日',
+        weekdayThu: '木曜日',
+        weekdayFri: '金曜日',
+        weekdaySat: '土曜日'
+      }
+    };
+
+    var currentLang = 'zh';
+
+    function t(key) {
+      return (i18n[currentLang] && i18n[currentLang][key]) || key;
+    }
+
+    function setLang(lang) {
+      if (lang === currentLang) return;
+      currentLang = lang;
+
+      // Update text content elements
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n');
+        var text = t(key);
+        if (text) el.textContent = text;
+      });
+
+      // Update placeholder attributes
+      document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+        var key = el.getAttribute('data-i18n-ph');
+        var text = t(key);
+        if (text) el.setAttribute('placeholder', text);
+      });
+
+      // Update option text for selects
+      document.querySelectorAll('option[data-i18n]').forEach(function(opt) {
+        var key = opt.getAttribute('data-i18n');
+        var text = t(key);
+        if (text) opt.textContent = text;
+      });
+
+      // Update lang buttons
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+
+      // Update page title
+      document.title = t('formTitle') + ' | 鮨 雲丹';
+
+      // Update html lang attribute
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'ja';
+
+      // Recalculate weekday display
+      updateWeekday();
+
+      // Persist preference
+      try { localStorage.setItem('yuyue-admin-lang', lang); } catch(e) {}
+    }
+
+    // Language toggle buttons
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        setLang(this.getAttribute('data-lang'));
+      });
+    });
+
+    // Restore saved language
+    try {
+      var saved = localStorage.getItem('yuyue-admin-lang');
+      if (saved && (saved === 'zh' || saved === 'ja')) {
+        currentLang = saved;
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
+        });
+        document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'ja';
+        // Apply translations immediately before DOM renders other text
+        document.querySelectorAll('[data-i18n]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n');
+          var text = t(key);
+          if (text) el.textContent = text;
+        });
+        document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n-ph');
+          var text = t(key);
+          if (text) el.setAttribute('placeholder', text);
+        });
+        document.querySelectorAll('option[data-i18n]').forEach(function(opt) {
+          var key = opt.getAttribute('data-i18n');
+          var text = t(key);
+          if (text) opt.textContent = text;
+        });
+      }
+    } catch(e) {}
+
+    /* ======================================
+       Password Gate
+       ====================================== */
+    var CORRECT_PASSWORD = '6888';
+    var passwordGate = document.getElementById('passwordGate');
+    var passwordInput = document.getElementById('passwordInput');
+    var passwordError = document.getElementById('passwordError');
+    var passwordBtn = document.getElementById('passwordBtn');
+
+    // Check if already authenticated in this session
+    try {
+      if (sessionStorage.getItem('yuyue-admin-auth') === 'true') {
+        passwordGate.classList.add('hidden');
+      }
+    } catch(e) {}
+
+    function checkPassword() {
+      var entered = passwordInput.value.trim();
+      if (entered === CORRECT_PASSWORD) {
+        passwordGate.classList.add('hidden');
+        try { sessionStorage.setItem('yuyue-admin-auth', 'true'); } catch(e) {}
+        passwordError.classList.remove('show');
+      } else {
+        passwordInput.classList.add('error');
+        passwordError.classList.add('show');
+        setTimeout(function() {
+          passwordInput.classList.remove('error');
+        }, 500);
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+
+    passwordBtn.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkPassword();
+      }
+    });
+
+    // Auto-focus password input
+    if (!passwordGate.classList.contains('hidden')) {
+      setTimeout(function() { passwordInput.focus(); }, 300);
+    }
+
+    /* ======================================
+       Weekday Calculation
+       ====================================== */
+    var WEEKDAYS_ZH = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    var WEEKDAYS_JA = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+
+    function updateWeekday() {
+      var dateStr = document.getElementById('date').value;
+      var weekdayInput = document.getElementById('weekday');
+      if (!dateStr) {
+        weekdayInput.value = '';
+        return;
+      }
+      var d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d.getTime())) {
+        weekdayInput.value = '';
+        return;
+      }
+      var weekdays = currentLang === 'zh' ? WEEKDAYS_ZH : WEEKDAYS_JA;
+      weekdayInput.value = weekdays[d.getDay()];
+    }
+
+    /* ======================================
+       Initialize — Set today's date
+       ====================================== */
+    var dateInput = document.getElementById('date');
+    var weekdayInput = document.getElementById('weekday');
+
+    var today = new Date();
+    var yyyy = today.getFullYear();
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var dd = String(today.getDate()).padStart(2, '0');
+    var todayStr = yyyy + '-' + mm + '-' + dd;
+
+    dateInput.value = todayStr;
+    updateWeekday();
+
+    // Update weekday when date changes
+    dateInput.addEventListener('change', updateWeekday);
+
+    // Allow manual weekday override
+    weekdayInput.addEventListener('focus', function() {
+      this.readOnly = false;
+      this.style.background = '';
+      this.style.color = '';
+    });
+
+    /* ======================================
+       Form Submission — Generate URL
+       ====================================== */
+    var form = document.getElementById('reservationForm');
+    var urlOutput = document.getElementById('urlOutput');
+    var urlDisplay = document.getElementById('urlDisplay');
+    var btnOpen = document.getElementById('btnOpen');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Collect values
+      var data = {
+        name:    document.getElementById('name').value.trim(),
+        phone:   document.getElementById('phone').value.trim(),
+        date:    document.getElementById('date').value,
+        weekday: document.getElementById('weekday').value.trim(),
+        service: document.getElementById('service').value,
+        time:    document.getElementById('time').value,
+        guests:  document.getElementById('guests').value,
+        seating: document.getElementById('seating').value,
+        notes:   document.getElementById('notes').value.trim()
+      };
+
+      // Build query string (skip empty values)
+      var params = new URLSearchParams();
+      for (var key in data) {
+        if (data.hasOwnProperty(key) && data[key]) {
+          params.set(key, data[key]);
+        }
+      }
+
+      // Always include the language parameter so reservation page respects admin's choice
+      params.set('lang', currentLang);
+
+      // Build full URL
+      var base = window.location.href.replace(/admin\.html.*$/, '') + 'reservation.html';
+      var fullUrl = base + '?' + params.toString();
+
+      // Display
+      urlDisplay.textContent = fullUrl;
+      btnOpen.href = fullUrl;
+      urlOutput.classList.add('visible');
+
+      // Reset copy button state
+      var btnCopy = document.getElementById('btnCopy');
+      var btnCopyLabel = document.getElementById('btnCopyLabel');
+      btnCopy.classList.remove('copied');
+      btnCopyLabel.textContent = t('copyButton');
+
+      // Scroll to output
+      setTimeout(function() {
+        urlDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    });
+
+    /* ======================================
+       Copy to Clipboard
+       ====================================== */
+    function copyLink() {
+      var url = urlDisplay.textContent;
+      if (!url) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showCopySuccess();
+        }).catch(function() {
+          fallbackCopy(url);
+        });
+      } else {
+        fallbackCopy(url);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+
+      if (navigator.userAgent.match(/ipad|iphone/i)) {
+        textarea.contentEditable = true;
+        textarea.readOnly = true;
+        var range = document.createRange();
+        range.selectNodeContents(textarea);
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        textarea.setSelectionRange(0, 999999);
+      } else {
+        textarea.select();
+        textarea.setSelectionRange(0, 999999);
+      }
+
+      try {
+        document.execCommand('copy');
+        showCopySuccess();
+      } catch (err) {
+        showToast(t('toastFailed'));
+      }
+
+      document.body.removeChild(textarea);
+    }
+
+    function showCopySuccess() {
+      var btnCopy = document.getElementById('btnCopy');
+      var btnCopyLabel = document.getElementById('btnCopyLabel');
+      btnCopy.classList.add('copied');
+      btnCopyLabel.textContent = t('copiedText');
+      showToast(t('toastCopied'));
+
+      setTimeout(function() {
+        btnCopy.classList.remove('copied');
+        btnCopyLabel.textContent = t('copyButton');
+      }, 2500);
+    }
+
+    // Attach copy handler
+    document.getElementById('btnCopy').addEventListener('click', copyLink);
+
+    /* ======================================
+       Toast
+       ====================================== */
+    var toastTimer;
+
+    function showToast(message) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
