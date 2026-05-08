@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>套餐详情 | 鮨 雲丹</title>
+  <style>
+    :root {
+      --color-bg: #F9F6F0;
+      --color-card: #FFFFFF;
+      --color-text: #2C2416;
+      --color-text-secondary: #6B5E4F;
+      --color-text-light: #9B8E7E;
+      --color-accent: #8B7355;
+      --color-accent-soft: #B8A58B;
+      --color-border: #E5DDD2;
+      --font-serif: 'STSongti-SC', 'Songti SC', 'Noto Serif SC', 'Hiragino Mincho Pro', 'YuMincho', 'Times New Roman', serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Hiragino Sans', 'Noto Sans SC', sans-serif;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: calc(48px + var(--safe-top)) 28px calc(48px + var(--safe-bottom));
+      text-align: center;
+    }
+
+    .menu-container {
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .shop-name {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      letter-spacing: 0.1em;
+      color: var(--color-accent);
+      margin-bottom: 40px;
+    }
+
+    .icon-row {
+      font-size: 36px;
+      margin-bottom: 28px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .message {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      letter-spacing: 0.08em;
+      line-height: 2;
+      color: var(--color-text);
+      margin-bottom: 32px;
+    }
+
+    .message .emoji {
+      font-size: 18px;
+    }
+
+    .card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 28px 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+    }
+
+    .card-label {
+      font-size: 12px;
+      color: var(--color-text-light);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .card-shop {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      letter-spacing: 0.06em;
+      color: var(--color-text);
+      margin-bottom: 12px;
+    }
+
+    .card-phone {
+      display: inline-block;
+      font-family: var(--font-serif);
+      font-size: 20px;
+      letter-spacing: 0.06em;
+      color: var(--color-accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--color-accent-soft);
+      padding-bottom: 2px;
+      transition: opacity 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card-phone:active {
+      opacity: 0.6;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--color-text-light);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .back-link:active {
+      color: var(--color-text);
+    }
+
+    .footer-decoration {
+      margin-top: 36px;
+      width: 24px;
+      height: 1px;
+      background: var(--color-border);
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="menu-container">
+
+    <div class="shop-name">鮨 雲丹</div>
+
+    <div class="icon-row" aria-hidden="true">👨‍🍳</div>
+
+    <p class="message">
+      小徐师傅正在<br>努力制作此页面<span class="emoji">🍣</span>
+    </p>
+
+    <div class="card">
+      <div class="card-label">套餐详情可致电咨询店员</div>
+      <div class="card-shop">鮨 雲丹</div>
+      <a class="card-phone" href="tel:13482832778">134 8283 2778</a>
+    </div>
+
+    <a class="back-link" href="reservation.html">← 返回预约页</a>
+
+    <div class="footer-decoration"></div>
+
+  </div>
+
+</body>
+</html>
