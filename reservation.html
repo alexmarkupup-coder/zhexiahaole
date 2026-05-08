@@ -304,7 +304,7 @@
        ======================================== */
     .welcome-section {
       text-align: center;
-      padding: 56px 32px 48px;
+      padding: 40px 32px 36px;
       max-width: 480px;
       margin: 0 auto;
       opacity: 0;
@@ -326,9 +326,9 @@
     }
 
     .vip-name {
-      font-family: var(--font-serif);
+      font-family: 'STSongti-SC', 'Songti SC', 'Noto Serif SC', 'Hiragino Mincho Pro', 'YuMincho', 'Times New Roman', serif;
       font-size: 22px;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: 0.12em;
       color: var(--color-text);
       margin-bottom: 16px;
@@ -365,7 +365,7 @@
       width: 40px;
       height: 1px;
       background: var(--color-accent-soft);
-      margin: 32px auto 0;
+      margin: 22px auto 0;
       opacity: 0.5;
     }
 
@@ -374,17 +374,17 @@
        ======================================== */
     .deco-omakase {
       text-align: center;
-      padding: 24px 20px 36px;
+      padding: 16px 20px 24px;
       max-width: 520px;
       margin: 0 auto;
     }
 
     .deco-omakase-text {
       font-family: var(--font-sans);
-      font-size: clamp(12px, 2.5vw, 15px);
+      font-size: clamp(13px, 2.8vw, 16px);
       letter-spacing: 0.35em;
       color: var(--color-text-light);
-      opacity: 0.22;
+      opacity: 0.3;
       font-weight: 300;
     }
 
@@ -393,7 +393,7 @@
        ======================================== */
     .reservation-section {
       position: relative;
-      padding: 0 24px 48px;
+      padding: 0 24px 36px;
       max-width: 520px;
       margin: 0 auto;
     }
@@ -558,13 +558,12 @@
        ======================================== */
     .brand-signature {
       text-align: center;
-      padding: 48px 24px;
+      padding: 34px 24px;
       max-width: 480px;
       margin: 0 auto;
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 0.7s ease, transform 0.7s ease;
-    }
 
     .brand-signature.visible {
       opacity: 1;
@@ -602,7 +601,7 @@
     .access-section {
       max-width: 480px;
       margin: 0 auto;
-      padding: 0 24px 48px;
+      padding: 0 24px 34px;
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 0.7s ease, transform 0.7s ease;
@@ -721,7 +720,7 @@
     .about-section {
       max-width: 480px;
       margin: 0 auto;
-      padding: 0 24px 48px;
+      padding: 0 24px 34px;
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 0.7s ease, transform 0.7s ease;
@@ -758,7 +757,7 @@
     .gallery-section {
       max-width: 540px;
       margin: 0 auto;
-      padding: 0 24px 48px;
+      padding: 0 24px 34px;
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 0.7s ease, transform 0.7s ease;
@@ -809,7 +808,7 @@
        ======================================== */
     .deco-gubei {
       text-align: center;
-      padding: 8px 20px 40px;
+      padding: 4px 20px 28px;
       max-width: 520px;
       margin: 0 auto;
     }
@@ -819,7 +818,7 @@
       font-size: clamp(13px, 2.8vw, 16px);
       letter-spacing: 0.3em;
       color: var(--color-text-light);
-      opacity: 0.28;
+      opacity: 0.35;
       font-weight: 300;
     }
 
@@ -828,7 +827,7 @@
        ======================================== */
     .footer {
       text-align: center;
-      padding: 40px 24px 48px;
+      padding: 28px 24px 34px;
       max-width: 480px;
       margin: 0 auto;
     }
@@ -841,17 +840,17 @@
     }
 
     .footer-shop {
-      font-size: 11px;
-      color: var(--color-text-light);
-      letter-spacing: 0.08em;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      letter-spacing: 0.1em;
       margin-bottom: 6px;
     }
 
     .footer-copyright {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--color-text-light);
-      opacity: 0.35;
-      letter-spacing: 0.06em;
+      opacity: 0.45;
+      letter-spacing: 0.08em;
       margin-top: 4px;
     }
 
@@ -1050,8 +1049,6 @@
 
     <!-- About Section -->
     <div class="about-section" id="aboutSection">
-      <h2 class="section-heading" data-i18n="aboutTitle">旬を大切に</h2>
-      <p class="section-heading-sub" data-i18n="aboutTitleSub">About</p>
       <div class="about-text" id="about-text"></div>
     </div>
 
@@ -1088,6 +1085,11 @@
         <div class="gallery-item">
           <div class="gallery-placeholder">gallery 05</div>
           <img class="gallery-img" src="tttsss/food2.jpg" alt="" loading="lazy" decoding="async"
+            onload="this.previousElementSibling.style.display='none';this.classList.add('loaded')" onerror="this.style.display='none'">
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-placeholder">gallery 06</div>
+          <img class="gallery-img" src="tttsss/food3.jpg" alt="" loading="lazy" decoding="async"
             onload="this.previousElementSibling.style.display='none';this.classList.add('loaded')" onerror="this.style.display='none'">
         </div>
       </div>
