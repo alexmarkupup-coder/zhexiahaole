@@ -418,7 +418,7 @@
 
     .url-output.visible {
       opacity: 1;
-      max-height: 400px;
+      max-height: 600px;
       margin-top: 24px;
     }
 
@@ -434,6 +434,27 @@
       user-select: all;
       margin-bottom: 12px;
       border: 1px solid var(--color-border-light);
+    }
+
+    .qr-wrapper {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .qr-code {
+      display: block;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+      border-radius: 8px;
+      background: var(--color-highlight);
+    }
+
+    .qr-label {
+      font-size: 11px;
+      color: var(--color-text-light);
+      letter-spacing: 0.06em;
+      margin-top: 8px;
     }
 
     .btn-row {
@@ -622,6 +643,10 @@
       <div class="url-output" id="urlOutput">
         <div class="card-title" style="margin-bottom: 12px; font-size: 14px;" data-i18n="urlTitle">预约链接已生成</div>
         <div class="url-display" id="urlDisplay"></div>
+        <div class="qr-wrapper">
+          <img class="qr-code" id="qrCode" src="" alt="QR Code" style="display:none">
+          <div class="qr-label" data-i18n="qrLabel">客人扫码即可查看预约</div>
+        </div>
         <div class="btn-row">
           <button type="button" class="btn btn-copy" id="btnCopy">
             <span id="btnCopyLabel" data-i18n="copyButton">复制链接</span>
@@ -681,6 +706,7 @@
         copyButton: '复制链接',
         copiedText: '已复制 ✓',
         previewButton: '预览',
+        qrLabel: '客人扫码即可查看预约',
         toastCopied: '链接已复制到剪贴板',
         toastFailed: '复制失败，请手动复制',
         weekdaySun: '周日',
@@ -723,6 +749,7 @@
         copyButton: 'リンクをコピー',
         copiedText: 'コピーしました ✓',
         previewButton: 'プレビューを開く',
+        qrLabel: 'QRコードをスキャンしてご確認ください',
         toastCopied: 'リンクをコピーしました',
         toastFailed: 'コピーに失敗しました',
         weekdaySun: '日曜日',
@@ -954,6 +981,12 @@
       // Display
       urlDisplay.textContent = fullUrl;
       btnOpen.href = fullUrl;
+
+      // Generate QR Code
+      var qrImg = document.getElementById('qrCode');
+      qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(fullUrl);
+      qrImg.style.display = 'block';
+
       urlOutput.classList.add('visible');
 
       // Reset copy button state
