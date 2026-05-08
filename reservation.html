@@ -705,6 +705,11 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    .btn-map span:last-child {
+      border-bottom: 1px solid rgba(255,255,255,0.35);
+      padding-bottom: 1px;
+    }
+
     .btn-map:active {
       background: #1A1510;
       transform: scale(0.98);
@@ -728,14 +733,15 @@
     }
 
     .about-text {
-      font-size: 14px;
-      line-height: 2.2;
-      color: var(--color-text-secondary);
-      letter-spacing: 0.03em;
+      text-align: center;
     }
 
-    .about-text p + p {
-      margin-top: 20px;
+    .about-poem {
+      font-family: var(--font-serif);
+      font-size: clamp(17px, 3vw, 22px);
+      line-height: 2.4;
+      letter-spacing: 0.15em;
+      color: var(--color-text);
     }
 
     .about-signature {
@@ -813,7 +819,7 @@
       font-size: clamp(13px, 2.8vw, 16px);
       letter-spacing: 0.3em;
       color: var(--color-text-light);
-      opacity: 0.18;
+      opacity: 0.28;
       font-weight: 300;
     }
 
@@ -944,7 +950,6 @@
     <div class="hero-overlay">
       <h1 class="hero-shop-name" id="heroShopName">鮨 雲丹</h1>
       <p class="hero-shop-name-sub" id="heroShopNameSub">SUSHI UNI · SHANGHAI</p>
-      <p class="hero-tagline" id="heroTagline">旬之味，静时光。</p>
     </div>
     <div class="hero-scroll-hint" aria-hidden="true"></div>
   </header>
@@ -988,7 +993,7 @@
           </li>
           <li class="detail-item">
             <div class="detail-label" data-i18n="labelPhone">电话</div>
-            <a class="detail-value" id="val-phone" href="">—</a>
+            <div class="detail-value" id="val-phone">—</div>
           </li>
           <li class="detail-item">
             <div class="detail-label" data-i18n="labelDate">到店日期</div>
@@ -1125,12 +1130,12 @@
         labelTime: '到店时间',
         labelGuests: '人数',
         labelSeating: '席位',
-        labelNotes: '备注',
+        labelNotes: '特别需求',
         emptyValue: '待填写',
         emptyNotes: '无特殊要求',
         accessTitle: '门店信息',
         accessTitleSub: 'アクセス',
-        navButton: '导航',
+        navButton: '获取路线',
         phoneHint: '☝️ 点击号码直接拨打',
         aboutTitle: '旬を大切に',
         aboutTitleSub: 'About',
@@ -1158,7 +1163,7 @@
         emptyNotes: '特になし',
         accessTitle: 'アクセス',
         accessTitleSub: 'Access',
-        navButton: 'ナビ',
+        navButton: 'アクセス',
         phoneHint: '☝️ タップで電話をかける',
         aboutTitle: '旬を大切に',
         aboutTitleSub: 'About',
@@ -1247,17 +1252,15 @@
     var shop = {
       name:       '鮨 雲丹',
       nameSub:    'SUSHI UNI · SHANGHAI',
-      taglineZH:  '旬之味，静时光。',
-      taglineJA:  '旬の味と静かな時間を。',
       address:    '上海市长宁区古北路1088号3F',
       phone:      '13482832778',
       accessNoteZH: '15号线至红宝石路站2号出口，步行390米可到。如果您自驾前来，也可点击导航链接，黄金城道路侧两旁有停车位。',
       accessNoteJA: '地下鉄15号線 紅宝石路駅 2番出口より徒歩約390m。お車でお越しの際は、黄金城道沿いに駐車スペースがございます。',
       mapUrl:     'https://surl.amap.com/1lADHFM1eagh',
       aboutTitle: '旬を大切に',
-      aboutTextZH: '每日严选当季最鲜食材。\n\n一握之间，蕴含季节流转与匠人之心。\n\n静候您的光临，慢享一段宁静时光。',
-      aboutTextJA: '毎朝、市場でその日最も輝く食材を選びます。\n\n握りひとつに、季節の移ろいと生産者の想いを込めて。\n\nどうぞ、静かな時間をお過ごしください。',
-      aboutSignature: '— 鮨 雲丹 主人'
+      aboutTextZH: '晨采鲜鱼 午至板前 日日新鲜',
+      aboutTextJA: '朝獲れの鮮魚 昼には板前へ 毎日新鮮',
+      aboutSignature: ''
     };
 
     /* ======================================
@@ -1326,7 +1329,6 @@
 
       setText('val-name', r.name, emptyVal);
       setText('val-phone', r.phone, emptyVal);
-      setAttr('val-phone', 'href', 'tel:' + (r.phone || '').replace(/[^0-9+]/g, ''));
 
       // Date + Weekday
       if (r.date) {
@@ -1363,20 +1365,13 @@
         notesEl.classList.remove('empty');
       }
 
-      // Update tagline based on language
-      document.getElementById('heroTagline').textContent =
-        currentLang === 'zh' ? shop.taglineZH : shop.taglineJA;
-
       // Update access note based on language
       document.getElementById('shop-access-note').textContent =
         currentLang === 'zh' ? shop.accessNoteZH : shop.accessNoteJA;
 
       // Update about text based on language
       var aboutText = currentLang === 'zh' ? shop.aboutTextZH : shop.aboutTextJA;
-      var aboutParas = aboutText.split('\n\n').filter(Boolean);
-      document.getElementById('about-text').innerHTML =
-        aboutParas.map(function(p) { return '<p>' + p.replace(/\n/g, '<br>') + '</p>'; }).join('') +
-        '<div class="about-signature">' + shop.aboutSignature + '</div>';
+      document.getElementById('about-text').innerHTML = '<p class="about-poem">' + aboutText + '</p>';
     }
 
     // --- Initial Render ---
@@ -1432,7 +1427,7 @@
     // Hero text animation on load
     function animateHero() {
       setTimeout(function() {
-        var els = ['heroShopName', 'heroShopNameSub', 'heroTagline'];
+        var els = ['heroShopName', 'heroShopNameSub'];
         els.forEach(function(id) {
           var el = document.getElementById(id);
           if (el) el.classList.add('visible');
